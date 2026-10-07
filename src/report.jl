@@ -32,7 +32,7 @@ function report(x::FloatSD)
     para2_3 = "Overall stagnation length " * string(num_absorptions(x)) * " if ignoring cancellation of rounding directions."
 
     lcite = "See paper: Analysis and Detection of Stagnation in Floating-Point Summation,"
-    lcite2 = "Mantas Mikaitis and William Woolfenden, 2026 (in progress)."
+    lcite2 = "Mantas Mikaitis and William Woolfenden, 2026."
 
     para3_1 = "u is the total number of bits which were not shifted off in the addition."
     para3_2 = "Total number of bits processed u = " * string(x.u) * "." 
