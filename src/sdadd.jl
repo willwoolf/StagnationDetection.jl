@@ -5,6 +5,7 @@ const _MINNORMAL_FLOAT32 = reinterpret(Float32, 0x0080_0000)
 const _MINNORMAL_FLOAT16 = reinterpret(Float16, 0x0400)
 
 function sdadd(in1::T, in2::F) where {T <: FloatSD, F <: AbstractFloat}
+    outval::F = in1.value + in2
     u_i::UInt = getAbsorptionU(in1.value, in2)
     isAbsorption::Int8 = getAbsorptionInfo(in1.value, in2, u_i, in1.t)
 
@@ -12,7 +13,7 @@ function sdadd(in1::T, in2::F) where {T <: FloatSD, F <: AbstractFloat}
     absorptions_dn_n::UInt = ifelse(isAbsorption == -1, in1.absorptions_dn + 1, in1.absorptions_dn)
 
     return T(
-        in1.value + in2,
+        outval,
         in1.u + u_i,
         in1.t,
         in1.additions + 1,
@@ -28,16 +29,16 @@ function getAbsorptionU(x::T, y::T) where {T <: AbstractFloat}
     return max(0, precision(T) - abs(bitexponent(x) - bitexponent(y)))
 end
 
-function getAbsorptionInfo(x::T, y::T, u_classic::Integer, t::Integer) where {T <: AbstractFloat}
+function getAbsorptionInfo(x::T, y::T, z::T, u_classic::Integer, t::Integer) where {T <: AbstractFloat}
     isAbsorption::Int8 = 0 # should ALMOST DEFINITELY rename this
     if t == -1
         if u_classic == 0
             if abs(y) < abs(x)
-                if 2 * abs(y) < eps(x)
-                    isAbsorption = -sign(y) # sign corresponds to direction of rounding
+                if z == x
+                    isAbsorption = -sign(y)
                 end
             else
-                if 2 * abs(x) < eps(y)
+                if z == y
                     isAbsorption = -sign(x)
                 end
             end
@@ -64,8 +65,6 @@ function bitexponent(x::Float64)
     e::Int = 0
     if x == 0
         return e
-    elseif issubnormal(x)
-        e = exponent(_MINNORMAL_FLOAT64)
     elseif isinf(x) || isnan(x)
         # if values are inf or nan, stagnation detection fails silently
         e = 1024
@@ -79,8 +78,6 @@ function bitexponent(x::Float32)
     e::Int = 0
     if x == 0
         return e
-    elseif issubnormal(x)
-        e = exponent(_MINNORMAL_FLOAT32)
     elseif isinf(x) || isnan(x)
         e = 128
     else
@@ -93,8 +90,6 @@ function bitexponent(x::Float16)
     e::Int = 0
     if x == 0
         return e
-    elseif issubnormal(x)
-        e = exponent(_MINNORMAL_FLOAT16)
     elseif isinf(x) || isnan(x)
         e = 16
     else
