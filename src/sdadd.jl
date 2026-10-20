@@ -98,5 +98,3 @@ function bitexponent(x::Float16)
     return e
 end
 
-
-# TODO: put warnings in report instead of bitexponent
