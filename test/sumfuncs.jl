@@ -7,9 +7,22 @@ function harm(N::Int, T::DataType = Float64)
 
     s::T = 1.0
     for i in 2:N
-        x = T(1)/i
+        x = one(T)/i
         s += x
     end
+    return s
+end
+
+function harm(s::T, N::Int) where {T <: AbstractFloat}
+    if N == 0 return s end
+    if N == 1 return s + 1 end
+    @assert N > 1
+
+    for i in 1:N
+        x = one(T)/i
+        s += x
+    end
+
     return s
 end
 
@@ -20,9 +33,22 @@ function iharm(N::Int, T::DataType = Float64)
 
     s::T = 0.0
     for i in N:-1:1
-        x = T(1)/i
+        x = one(T)/i
         s += x
     end
+    return s
+end
+
+function iharm(s::T, N::Int) where {T <: AbstractFloat}
+    if N == 0 return s end
+    if N == 1 return s + 1 end
+    @assert N > 1
+
+    for i in N:-1:1
+        x = one(T)/i
+        s += x
+    end
+
     return s
 end
 
@@ -62,7 +88,19 @@ function pisum(N::Int, T::DataType = Float64)
 
     s::T = 1.0
     for i in 2:N
-        x = T(1)/(i*i)
+        x = one(T)/(i*i)
+        s += x
+    end
+    return s
+end
+
+function pisum(s::T, N::Int) where {T <: AbstractFloat}
+    if N == 0 return T(0.0) end
+    if N == 1 return T(1.0) end
+    @assert N > 1
+
+    for i in 1:N
+        x = one(T)/(i*i)
         s += x
     end
     return s
