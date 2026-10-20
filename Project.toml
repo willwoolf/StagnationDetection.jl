@@ -1,6 +1,6 @@
 name = "StagnationDetection"
 uuid = "2aafbc13-f42f-42e2-8543-db845ed17f8b"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Will Woolfenden <rcvw5971@leeds.ac.uk> and contributors"]
 
 [deps]
