@@ -332,11 +332,12 @@ export harm, iharm, randsum, rand2um, pisum
             for j in 1:i-1
                 x = FLOATS[i]
                 y = FLOATS[j]
+                (x, y) = abs(x) > abs(y) ? (x, y) : (y, x)
 
                 z = x + y
 
                 # one absorption has occurred and x == y, or neither of the above
-                if (z == x && y != 0) || (z == y && x != 0)
+                if z == x
                     # @test num_absorptions(z) != 0
                     stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
                 else
