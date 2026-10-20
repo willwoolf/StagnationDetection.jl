@@ -336,7 +336,7 @@ export harm, iharm, randsum, rand2um, pisum
                 z = x + y
 
                 # one absorption has occurred and x == y, or neither of the above
-                if z == x
+                if (z == x && y != 0) || (z == y && x != 0)
                     # @test num_absorptions(z) != 0
                     stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
                 else
