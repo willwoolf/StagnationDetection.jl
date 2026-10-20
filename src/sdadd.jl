@@ -7,7 +7,7 @@ const _MINNORMAL_FLOAT16 = reinterpret(Float16, 0x0400)
 function sdadd(in1::T, in2::F) where {T <: FloatSD, F <: AbstractFloat}
     outval::F = in1.value + in2
     u_i::UInt = getAbsorptionU(in1.value, in2)
-    isAbsorption::Int8 = getAbsorptionInfo(in1.value, in2, u_i, in1.t)
+    isAbsorption::Int8 = getAbsorptionInfo(in1.value, in2, outval, u_i, in1.t)
 
     absorptions_up_n::UInt = ifelse(isAbsorption ==  1, in1.absorptions_up + 1, in1.absorptions_up)
     absorptions_dn_n::UInt = ifelse(isAbsorption == -1, in1.absorptions_dn + 1, in1.absorptions_dn)
