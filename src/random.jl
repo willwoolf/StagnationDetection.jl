@@ -1,30 +1,22 @@
-import Random: Xoshiro, AbstractRNG
+import Base: rand
 
-import Base: rand, randn
-rand(rng::AbstractRNG, ::Type{Float64SD}) = convert.(Float64SD, rand(rng, Float64))
-rand(rng::AbstractRNG, ::Type{Float32SD}) = convert.(Float32SD, rand(rng, Float32))
-rand(rng::AbstractRNG, ::Type{Float16SD}) = convert.(Float16SD, rand(rng, Float16))
-rand(rng::AbstractRNG, ::Type{Float64SD}, arg1::Integer) = convert.(Float64SD, rand(rng, Float64, arg1))
-rand(rng::AbstractRNG, ::Type{Float32SD}, arg1::Integer) = convert.(Float32SD, rand(rng, Float32, arg1))
-rand(rng::AbstractRNG, ::Type{Float16SD}, arg1::Integer) = convert.(Float16SD, rand(rng, Float16, arg1))
-rand(rng::AbstractRNG, ::Type{Float64SD}, arg1::Integer, arg2::Integer) = convert.(Float64SD, rand(rng, Float64, arg1, arg2))
-rand(rng::AbstractRNG, ::Type{Float32SD}, arg1::Integer, arg2::Integer) = convert.(Float32SD, rand(rng, Float32, arg1, arg2))
-rand(rng::AbstractRNG, ::Type{Float16SD}, arg1::Integer, arg2::Integer) = convert.(Float16SD, rand(rng, Float16, arg1, arg2))
+rand(::Type{Float64SD}) = convert(Float64SD, rand(Float64))
+rand(::Type{Float32SD}) = convert(Float32SD, rand(Float32))
+rand(::Type{Float16SD}) = convert(Float16SD, rand(Float16))
 
-rand(::Type{T}) where {T <: FloatSD} = rand(Xoshiro(), T)
-rand(::Type{T}, arg1::Integer) where {T <: FloatSD} = rand(Xoshiro(), T, arg1)
-rand(::Type{T}, arg1::Integer, arg2::Integer) where {T <: FloatSD} = rand(Xoshiro(), T, arg1, arg2)
+rand(::Type{Float64SD}, dims::Integer...) = convert.(Float64SD, rand(Float64, dims...))
+rand(::Type{Float32SD}, dims::Integer...) = convert.(Float32SD, rand(Float32, dims...))
+rand(::Type{Float16SD}, dims::Integer...) = convert.(Float16SD, rand(Float16, dims...))
 
-randn(rng::AbstractRNG, ::Type{Float64SD}) = convert.(Float64SD, randn(rng, Float64))
-randn(rng::AbstractRNG, ::Type{Float32SD}) = convert.(Float32SD, randn(rng, Float32))
-randn(rng::AbstractRNG, ::Type{Float16SD}) = convert.(Float16SD, randn(rng, Float16))
-randn(rng::AbstractRNG, ::Type{Float64SD}, arg1::Integer) = convert.(Float64SD, randn(rng, Float64, arg1))
-randn(rng::AbstractRNG, ::Type{Float32SD}, arg1::Integer) = convert.(Float32SD, randn(rng, Float32, arg1))
-randn(rng::AbstractRNG, ::Type{Float16SD}, arg1::Integer) = convert.(Float16SD, randn(rng, Float16, arg1))
-randn(rng::AbstractRNG, ::Type{Float64SD}, arg1::Integer, arg2::Integer) = convert.(Float64SD, randn(rng, Float64, arg1, arg2))
-randn(rng::AbstractRNG, ::Type{Float32SD}, arg1::Integer, arg2::Integer) = convert.(Float32SD, randn(rng, Float32, arg1, arg2))
-randn(rng::AbstractRNG, ::Type{Float16SD}, arg1::Integer, arg2::Integer) = convert.(Float16SD, randn(rng, Float16, arg1, arg2))
 
-randn(::Type{T}) where {T <: FloatSD} = randn(Xoshiro(), T)
-randn(::Type{T}, arg1::Integer) where {T <: FloatSD} = randn(Xoshiro(), T, arg1)
-randn(::Type{T}, arg1::Integer, arg2::Integer) where {T <: FloatSD} = randn(Xoshiro(), T, arg1, arg2)
+import Base: randn
+
+randn(::Type{Float64SD}) = convert(Float64SD, randn(Float64))
+randn(::Type{Float32SD}) = convert(Float32SD, randn(Float32))
+randn(::Type{Float16SD}) = convert(Float16SD, randn(Float16))
+
+randn(::Type{Float64SD}, dims::Integer...) = convert.(Float64SD, randn(Float64, dims...))
+randn(::Type{Float32SD}, dims::Integer...) = convert.(Float32SD, randn(Float32, dims...))
+randn(::Type{Float16SD}, dims::Integer...) = convert.(Float16SD, randn(Float16, dims...))
+
+
