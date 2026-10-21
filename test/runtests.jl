@@ -297,6 +297,9 @@ export harm, iharm, randsum, rand2um, pisum
         rng = Xoshiro()
         numsamples = 1000
 
+        STAGNATION_DETECTED = ones(Bool, numsamples)
+        NO_FALSE_POSITIVES = ones(Bool, numsamples)
+
         for i in 1:numsamples
             x, y = rand(rng, FLOATS, 2)
             (x, y) = abs(x) > abs(y) ? (x, y) : (y, x)
@@ -307,15 +310,17 @@ export harm, iharm, randsum, rand2um, pisum
             # if (z == x && y != 0) || (z == y && x != 0)
             if z == x
                 # @test num_absorptions(z) != 0
-                stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
+                # stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
+                STAGNATION_DETECTED[i] = (num_absorptions(z) != 0)
             else
                 # @test num_absorptions(z) == 0
-                no_false_positives = no_false_positives && (num_absorptions(z) == 0)
+                # no_false_positives = no_false_positives && (num_absorptions(z) == 0)
+                NO_FALSE_POSITIVES[i] = (num_absorptions(z) == 0)
             end
         end
 
-        @test stagnation_detected
-        @test no_false_positives
+        @test all(STAGNATION_DETECTED)
+        @test all(NO_FALSE_POSITIVES)
     end
 
     @testset "Stagnation measurement (exhaustive)" begin
