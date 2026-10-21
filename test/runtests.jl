@@ -333,11 +333,17 @@ export harm, iharm, randsum, rand2um, pisum
         stagnation_detected = true
         no_false_positives = true
 
-        INDEXPAIRS = [(i, j) for i in 1:lastindex(REPRESENTATIONS) for j in 1:lastindex(REPRESENTATIONS) if i > j]
+        numfloats = lastindex(REPRESENTATIONS)
 
-        Threads.@threads for (i, j) in INDEXPAIRS
-            x = FLOATS[i]
-            y = FLOATS[j]
+        INDEXPAIRS = [(i, j) for i in 1:numfloats for j in 1:numfloats if i > j]
+
+        STAGNATION_DETECTED = ones(Bool, lastindex(INDEXPAIRS))
+        NO_FALSE_POSITIVES = ones(Bool, lastindex(INDEXPAIRS))
+
+        Threads.@threads for k in 1:lastindex(INDEXPAIRS)
+            idx = INDEXPAIRS[k]
+            x = FLOATS[idx[1]]
+            y = FLOATS[idx[2]]
             (x, y) = abs(x) > abs(y) ? (x, y) : (y, x)
 
             z = x + y
@@ -345,15 +351,17 @@ export harm, iharm, randsum, rand2um, pisum
             # one absorption has occurred and x == y, or neither of the above
             if z == x
                 # @test num_absorptions(z) != 0
-                stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
+                STAGNATION_DETECTED[(i-1)*numfloats + j] = num_absorptions(z) != 0
+                # stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
             else
                 # @test num_absorptions(z) == 0
-                no_false_positives = no_false_positives && (num_absorptions(z) == 0)
+                NO_FALSE_POSITIVES[(i-1)*numfloats + j] = num_absorptions(z) == 0
+                # no_false_positives = no_false_positives && (num_absorptions(z) == 0)
             end
         end
 
-        @test stagnation_detected
-        @test no_false_positives
+        @test all(STAGNATION_DETECTED)
+        @test all(NO_FALSE_POSITIVES)
     end
 
 
