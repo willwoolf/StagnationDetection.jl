@@ -25,14 +25,11 @@ This is because the value being added is small enough in magnitude that $\mathrm
 
 ## Installation
 
-Currently this package is not registered but can be installed manually.
-In a working directory of your choice, 
+StagnationDetection.jl can be installed through the Julia package manager:
 ```
->> git clone https://github.com/willwoolf/StagnationDetection.jl.git
->> cd StagnationDetection.jl
 >> julia
 julia> ]
-pkg> develop .
+pkg> add StagnationDetection
 ```
 
 The package will be installed and ready to use.
