@@ -4,7 +4,7 @@ StagnationDetection = "2aafbc13-f42f-42e2-8543-db845ed17f8b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [sources]
-StagnationDetection = {rev = "dev", url = ".."}
+StagnationDetection = {rev = "master", url = "https://github.com/willwoolf/StagnationDetection.jl.git"}
 
 [compat]
 Random = "1"
