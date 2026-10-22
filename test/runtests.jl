@@ -1,6 +1,7 @@
 using StagnationDetection
 using Test
 
+import LinearAlgebra: Symmetric, UnitLowerTriangular
 import Random: Xoshiro
 
 include("sumfuncs.jl")
@@ -323,6 +324,46 @@ export harm, iharm, randsum, rand2um, pisum
         @test all(NO_FALSE_POSITIVES)
     end
 
-    ## removed exhaustive test. too expensive, make into separate application
+    # return of exhaustive test
+    @testset "Stagnation measurement (exhaustive)" begin
+        REPRESENTATIONS = vcat(
+            UInt16(32769):UInt16(1):UInt16(64511),
+            UInt16(1):UInt16(1):UInt16(31743)
+        ) # nonzero, finite, number valued
+        FLOATS = Float16SD.(reinterpret.(Float16, REPRESENTATIONS))
+
+        numfloats = lastindex(FLOATS)
+
+        # store both checks in the same matrix
+        # either check absorption is correctly detected
+        # or check absorption has correctly not been detected (prevent false positives)
+
+        DETECTION = zeros(Bool, numfloats, numfloats)
+        DETECTION_LTVIEW = UnitLowerTriangular(DETECTION)
+
+        for i in 1:numfloats
+            Threads.@threads for j in 1:i-1
+                x = FLOATS[i]
+                y = FLOATS[j]
+
+                (x, y) = abs(x) > abs(y) ? (x, y) : (y, x)
+
+                z = x + y
+
+                # one absorption has occurred and x == y, or neither of the above
+                if z == x
+                    # @test num_absorptions(z) != 0
+                    DETECTION_LTVIEW[i, j] = num_absorptions(z) != 0
+                    # stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
+                else
+                    # @test num_absorptions(z) == 0
+                    DETECTION_LTVIEW[i, j] = num_absorptions(z) == 0
+                    # no_false_positives = no_false_positives && (num_absorptions(z) == 0)
+                end
+            end
+        end
+
+        @test all(Symmetric(DETECTION_LTVIEW, :L))
+    end
 
 end
