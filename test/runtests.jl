@@ -1,6 +1,7 @@
 using StagnationDetection
 using Test
 
+import LinearAlgebra: Symmetric, UnitLowerTriangular
 import Random: Xoshiro
 
 include("sumfuncs.jl")
@@ -330,38 +331,38 @@ export harm, iharm, randsum, rand2um, pisum
         ) # nonzero, finite, number valued
         FLOATS = Float16SD.(reinterpret.(Float16, REPRESENTATIONS))
 
-        stagnation_detected = true
-        no_false_positives = true
+        numfloats = lastindex(FLOATS)
 
-        numfloats = lastindex(REPRESENTATIONS)
+        # store both checks in the same matrix
+        # either check absorption is correctly detected
+        # or check absorption has correctly not been detected (prevent false positives)
 
-        INDEXPAIRS = [(i, j) for i in 1:numfloats for j in 1:numfloats if i > j]
+        DETECTION = zeros(Bool, numfloats, numfloats)
+        DETECTION_LTVIEW = UnitLowerTriangular(DETECTION)
 
-        STAGNATION_DETECTED = ones(Bool, lastindex(INDEXPAIRS))
-        NO_FALSE_POSITIVES = ones(Bool, lastindex(INDEXPAIRS))
+        for i in 1:numfloats
+            Threads.@threads for j in 1:i-1
+                x = FLOATS[i]
+                y = FLOATS[j]
 
-        Threads.@threads for k in 1:lastindex(INDEXPAIRS)
-            idx = INDEXPAIRS[k]
-            x = FLOATS[idx[1]]
-            y = FLOATS[idx[2]]
-            (x, y) = abs(x) > abs(y) ? (x, y) : (y, x)
+                (x, y) = abs(x) > abs(y) ? (x, y) : (y, x)
 
-            z = x + y
+                z = x + y
 
-            # one absorption has occurred and x == y, or neither of the above
-            if z == x
-                # @test num_absorptions(z) != 0
-                STAGNATION_DETECTED[(i-1)*numfloats + j] = num_absorptions(z) != 0
-                # stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
-            else
-                # @test num_absorptions(z) == 0
-                NO_FALSE_POSITIVES[(i-1)*numfloats + j] = num_absorptions(z) == 0
-                # no_false_positives = no_false_positives && (num_absorptions(z) == 0)
+                # one absorption has occurred and x == y, or neither of the above
+                if z == x
+                    # @test num_absorptions(z) != 0
+                    DETECTION_LTVIEW[i, j] = num_absorptions(z) != 0
+                    # stagnation_detected = stagnation_detected && (num_absorptions(z) != 0)
+                else
+                    # @test num_absorptions(z) == 0
+                    DETECTION_LTVIEW[i, j] = num_absorptions(z) == 0
+                    # no_false_positives = no_false_positives && (num_absorptions(z) == 0)
+                end
             end
         end
 
-        @test all(STAGNATION_DETECTED)
-        @test all(NO_FALSE_POSITIVES)
+        @test all(Symmetric(DETECTION_LTVIEW, :L))
     end
 
 
